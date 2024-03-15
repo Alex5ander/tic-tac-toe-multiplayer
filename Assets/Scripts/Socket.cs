@@ -21,7 +21,7 @@ public class Socket : MonoBehaviour
     [SerializeField] UnityEvent onEndGame;
     [SerializeField] UnityEvent onWin;
     SocketIOUnity socketIO;
-    readonly Uri uri = new("http://localhost:3000");
+    readonly Uri uri = new("https://tic-tac-toe-multiplayer-server.onrender.com/");
     // Start is called before the first frame update
     void Start()
     {
@@ -126,6 +126,10 @@ public class Socket : MonoBehaviour
             {
                 OnEndGame();
             });
+        };
+        socketIO.OnError += (sender, e) =>
+        {
+            Debug.Log(e);
         };
         socketIO.Connect();
     }
