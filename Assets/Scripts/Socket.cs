@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using SocketIOClient.Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -20,7 +21,14 @@ public class Socket : MonoBehaviour
     [SerializeField] UnityEvent onStartGame;
     [SerializeField] UnityEvent onEndGame;
     [SerializeField] UnityEvent onWin;
+    [SerializeField] UnityEvent onDisconnected;
     SocketIOUnity socketIO;
+    [DllImport("__Internal")]
+    static extern void ConnectWebGL();
+    [DllImport("__Internal")]
+    static extern void DisconnectWebGL();
+    [DllImport("__Internal")]
+    static extern void ClickWebGL(int index);
     readonly Uri uri = new("https://tic-tac-toe-multiplayer-server.onrender.com/");
     // Start is called before the first frame update
     void Start()
@@ -34,6 +42,12 @@ public class Socket : MonoBehaviour
 
     }
 
+    void OnUpdate(string json)
+    {
+        Data data = JsonUtility.FromJson<Data>(json);
+        cells[data.index].SetText(data.simbol);
+    }
+
     void OnUpdate(Data data)
     {
         cells[data.index].SetText(data.simbol);
@@ -44,7 +58,7 @@ public class Socket : MonoBehaviour
         onStartGame.Invoke();
     }
 
-    void OnEndGame(bool win = false)
+    void OnEndGame(int win)
     {
         for (int i = 0; i < 3; i++)
         {
@@ -53,10 +67,10 @@ public class Socket : MonoBehaviour
             Cell[] dfistcells = { cells[0], cells[4], cells[8] };
             Cell[] dsecondcells = { cells[2], cells[4], cells[6] };
 
-            bool horizontal = cells[i * 3 + 0].value == cells[i * 3 + 1].value && cells[i * 3 + 2].value == cells[i * 3 + 0].value;
-            bool vertical = cells[0 * 3 + i].value == cells[1 * 3 + i].value && cells[2 * 3 + i].value == cells[0 * 3 + i].value;
-            bool firstDiagonal = cells[0].value == cells[4].value && cells[8].value == cells[0].value;
-            bool secondDiagonal = cells[2].value == cells[4].value && cells[6].value == cells[2].value;
+            bool horizontal = cells[i * 3 + 0].value == cells[i * 3 + 1].value && cells[i * 3 + 2].value == cells[i * 3 + 0].value && cells[i * 3 + 0].value != "";
+            bool vertical = cells[0 * 3 + i].value == cells[1 * 3 + i].value && cells[2 * 3 + i].value == cells[0 * 3 + i].value && cells[0 * 3 + i].value != "";
+            bool firstDiagonal = cells[0].value == cells[4].value && cells[8].value == cells[0].value && cells[0].value != "";
+            bool secondDiagonal = cells[2].value == cells[4].value && cells[6].value == cells[2].value && cells[2].value != "";
 
             if (horizontal || vertical || firstDiagonal || secondDiagonal)
             {
@@ -68,7 +82,7 @@ public class Socket : MonoBehaviour
                 break;
             }
         }
-        if (win)
+        if (win == 1)
         {
             onWin.Invoke();
         }
@@ -76,21 +90,46 @@ public class Socket : MonoBehaviour
         {
             onEndGame.Invoke();
         }
-        socketIO.Disconnect();
     }
 
     public void Play()
     {
         onPlay.Invoke();
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ConnectWebGL();
+#else
         Connect();
+#endif
+    }
+    public void OpponentTurn()
+    {
+        StatusText.text = "Waiting for your opponent...";
     }
 
     public void Click(int index)
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        ClickWebGL(index);
+#else
         socketIO.Emit("click", _ =>
         {
-            StatusText.text = "Waiting for your opponent...";
+            OpponentTurn();
         }, index);
+#endif
+    }
+    public void OnConnected()
+    {
+        StatusText.text = "Waiting for your opponent...";
+    }
+
+    public void OnSimbol(string simbol)
+    {
+        SimbolText.text = "You: " + simbol;
+    }
+
+    public void OnYourTurn()
+    {
+        StatusText.text = "Your turn!";
     }
 
     void Connect()
@@ -101,41 +140,61 @@ public class Socket : MonoBehaviour
         };
         socketIO.OnConnected += (sender, e) =>
         {
-            StatusText.text = "Waiting for your opponent...";
-            socketIO.OnUnityThread("simbol", socketIOResponse =>
-            {
-                SimbolText.text = "You: " + socketIOResponse.GetValue<string>();
-            });
-            socketIO.OnUnityThread("your-turn", _ =>
-            {
-                StatusText.text = "Your turn!";
-            });
-            socketIO.OnUnityThread("start", _ =>
-            {
-                OnStartGame();
-            });
-            socketIO.OnUnityThread("update", socketIOResponse =>
-            {
-                OnUpdate(socketIOResponse.GetValue<Data>());
-            });
-            socketIO.OnUnityThread("win", socketIOResponse =>
-            {
-                OnEndGame(true);
-            });
-            socketIO.OnUnityThread("end-game", socketIOResponse =>
-            {
-                OnEndGame();
-            });
+            OnConnected();
         };
-        socketIO.OnError += (sender, e) =>
+        socketIO.OnUnityThread("simbol", socketIOResponse =>
         {
-            Debug.Log(e);
+            OnSimbol(socketIOResponse.GetValue<string>());
+        });
+        socketIO.OnUnityThread("your-turn", _ =>
+        {
+            OnYourTurn();
+        });
+        socketIO.OnUnityThread("start", _ =>
+        {
+            OnStartGame();
+        });
+        socketIO.OnUnityThread("update", socketIOResponse =>
+        {
+            OnUpdate(socketIOResponse.GetValue<Data>());
+        });
+        socketIO.OnUnityThread("win", socketIOResponse =>
+        {
+            OnEndGame(1);
+        });
+        socketIO.OnUnityThread("end-game", socketIOResponse =>
+        {
+            OnEndGame(0);
+        });
+        socketIO.OnDisconnected += (sender, e) =>
+        {
+            UnityThread.executeInUpdate(() =>
+            {
+                OnDisconnect();
+            });
         };
         socketIO.Connect();
     }
 
     public void Disconnect()
     {
-        socketIO.Disconnect();
+#if UNITY_WEBGL && !UNITY_EDITOR
+            DisconnectWebGL();
+#else
+        if (socketIO != null && socketIO.Connected)
+        {
+            socketIO.Disconnect();
+        }
+#endif            
+    }
+
+    public void OnDisconnect()
+    {
+        onDisconnected.Invoke();
+    }
+
+    void OnApplicationQuit()
+    {
+        Disconnect();
     }
 }

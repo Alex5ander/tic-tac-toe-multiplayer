@@ -11,7 +11,8 @@ public class Cell : MonoBehaviour
     public string value;
     void OnEnable()
     {
-        Text.text = "";
+        value = "";
+        Text.text = value;
         Backgroud.color = Color.white;
     }
     // Start is called before the first frame update
@@ -36,8 +37,8 @@ public class Cell : MonoBehaviour
 
     public void SetText(string value)
     {
-        Text.text = value;
         this.value = value;
+        Text.text = this.value;
     }
 
     public void SetBackgroundColor()
