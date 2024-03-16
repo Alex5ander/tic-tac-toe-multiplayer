@@ -16,6 +16,6 @@ git clone https://github.com/Alex5ander/tic-tac-toe-multiplayer.git
 
 ### Após clonado basta abrir o projeto na plataforma Unity
 
-### Mas caso queira apenas jogar ele basta clicar em jogar abaixo.
+Mas caso queira apenas jogar ele basta clicar em jogar abaixo.
 
 [Jogar](https://alex5ander.itch.io/tic-tac-toe-multiplayer)
