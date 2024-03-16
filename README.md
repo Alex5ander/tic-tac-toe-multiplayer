@@ -1,8 +1,8 @@
 # Tic Tac Toe Multiplayer
 Jogo Tic Tac Toe Multiplayer desenvolvido na plataforma Unity utilizando C# e JavaScript. Esse jogo pode ser jogado em navegadores incluindo mobile.
 
-Além desse repositório o projeto conta com outro que possui o código que vai rodar no servidor, você pode acessar e saber mais sobre ele neste
-[Link](https://github.com/Alex5ander/tic-tac-toe-multiplayer-server)
+Além desse repositório o projeto conta com outro que possui o código que é executado no servidor, você pode acessar e saber mais sobre ele neste link
+[Tic Tac Toe Multiplayer Server](https://github.com/Alex5ander/tic-tac-toe-multiplayer-server)
 
 ![preview](preview.png)
 
