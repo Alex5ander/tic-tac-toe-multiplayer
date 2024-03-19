@@ -24,10 +24,13 @@ mergeInto(LibraryManager.library, {
       gameInstance.SendMessage('Socket', "OnUpdate", JSON.stringify(data));
     });
     this.socket.on("win", _ => {
-      gameInstance.SendMessage('Socket', "OnEndGame", 1);
+      gameInstance.SendMessage('Socket', "OnWin");
     });
-    this.socket.on("end-game", _ => {
-      gameInstance.SendMessage('Socket', "OnEndGame", 0);
+    this.socket.on("lost", _ => {
+      gameInstance.SendMessage('Socket', "OnLost");
+    });
+    this.socket.on("draw", _ => {
+      gameInstance.SendMessage('Socket', "OnDraw");
     });
     this.socket.on("disconnect", _ => {
       gameInstance.SendMessage('Socket', 'OnDisconnect');

@@ -20,7 +20,6 @@ public class Socket : MonoBehaviour
     [SerializeField] UnityEvent onPlay;
     [SerializeField] UnityEvent onStartGame;
     [SerializeField] UnityEvent onEndGame;
-    [SerializeField] UnityEvent onWin;
     [SerializeField] UnityEvent onDisconnected;
     SocketIOUnity socketIO;
     [DllImport("__Internal")]
@@ -30,18 +29,6 @@ public class Socket : MonoBehaviour
     [DllImport("__Internal")]
     static extern void ClickWebGL(int index);
     readonly Uri uri = new("https://tic-tac-toe-multiplayer-server.onrender.com/");
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void OnUpdate(string json)
     {
         Data data = JsonUtility.FromJson<Data>(json);
@@ -58,7 +45,7 @@ public class Socket : MonoBehaviour
         onStartGame.Invoke();
     }
 
-    void OnEndGame(int win)
+    void DrawLine()
     {
         for (int i = 0; i < 3; i++)
         {
@@ -75,21 +62,33 @@ public class Socket : MonoBehaviour
             if (horizontal || vertical || firstDiagonal || secondDiagonal)
             {
                 Cell[] wincells = horizontal ? hcells : vertical ? vcells : firstDiagonal ? dfistcells : dsecondcells;
-                foreach (Cell c in wincells)
+                foreach (Cell cell in wincells)
                 {
-                    c.SetBackgroundColor();
+                    cell.SetBackgroundColor();
                 }
                 break;
             }
         }
-        if (win == 1)
-        {
-            onWin.Invoke();
-        }
-        else
-        {
-            onEndGame.Invoke();
-        }
+    }
+
+    void OnWin()
+    {
+        DrawLine();
+        StatusText.text = "Win: You";
+        onEndGame.Invoke();
+    }
+
+    void OnLost()
+    {
+        DrawLine();
+        StatusText.text = "Win: Opponent";
+        onEndGame.Invoke();
+    }
+
+    void OnDraw()
+    {
+        StatusText.text = "Draw";
+        onEndGame.Invoke();
     }
 
     public void Play()
@@ -146,26 +145,15 @@ public class Socket : MonoBehaviour
         {
             OnSimbol(socketIOResponse.GetValue<string>());
         });
-        socketIO.OnUnityThread("your-turn", _ =>
-        {
-            OnYourTurn();
-        });
-        socketIO.OnUnityThread("start", _ =>
-        {
-            OnStartGame();
-        });
+        socketIO.OnUnityThread("your-turn", _ => OnYourTurn());
+        socketIO.OnUnityThread("start", _ => OnStartGame());
         socketIO.OnUnityThread("update", socketIOResponse =>
         {
             OnUpdate(socketIOResponse.GetValue<Data>());
         });
-        socketIO.OnUnityThread("win", socketIOResponse =>
-        {
-            OnEndGame(1);
-        });
-        socketIO.OnUnityThread("end-game", socketIOResponse =>
-        {
-            OnEndGame(0);
-        });
+        socketIO.OnUnityThread("win", socketIOResponse => OnWin());
+        socketIO.OnUnityThread("lost", socketIOResponse => OnLost());
+        socketIO.OnUnityThread("draw", socketIOResponse => OnDraw());
         socketIO.OnDisconnected += (sender, e) =>
         {
             UnityThread.executeInUpdate(() =>

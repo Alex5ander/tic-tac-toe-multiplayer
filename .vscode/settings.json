@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Tic Tac Toe Multiplayer.sln"
+    "dotnet.defaultSolution": "tic-tac-toe-multiplayer.sln"
 }
