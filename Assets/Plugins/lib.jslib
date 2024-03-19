@@ -14,12 +14,15 @@ mergeInto(LibraryManager.library, {
     this.socket.on("simbol", data => {
       gameInstance.SendMessage('Socket', 'OnSimbol', data);
     });
-    this.socket.on("your-turn", _ => {
-      gameInstance.SendMessage('Socket', 'OnYourTurn');
-    });
     this.socket.on("start", _ => {
       gameInstance.SendMessage('Socket', 'OnStartGame');
     });
+    this.socket.on("your-turn", _ => {
+      gameInstance.SendMessage('Socket', 'OnYourTurn');
+    });
+    this.socket.on('opponent-turn', _ => {
+      gameInstance.SendMessage('Socket', "OnOpponentTurn");
+    })
     this.socket.on("update", data => {
       gameInstance.SendMessage('Socket', "OnUpdate", JSON.stringify(data));
     });
@@ -37,9 +40,7 @@ mergeInto(LibraryManager.library, {
     });
   },
   ClickWebGL: function (index) {
-    this.socket.emit("click", index, () => {
-      gameInstance.SendMessage('Socket', 'OpponentTurn');
-    });
+    this.socket.emit("click", index);
   }
 });
 

@@ -100,7 +100,7 @@ public class Socket : MonoBehaviour
         Connect();
 #endif
     }
-    public void OpponentTurn()
+    public void OnOpponentTurn()
     {
         StatusText.text = "Waiting for your opponent...";
     }
@@ -110,10 +110,7 @@ public class Socket : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
         ClickWebGL(index);
 #else
-        socketIO.Emit("click", _ =>
-        {
-            OpponentTurn();
-        }, index);
+        socketIO.Emit("click", index);
 #endif
     }
     public void OnConnected()
@@ -145,8 +142,9 @@ public class Socket : MonoBehaviour
         {
             OnSimbol(socketIOResponse.GetValue<string>());
         });
-        socketIO.OnUnityThread("your-turn", _ => OnYourTurn());
         socketIO.OnUnityThread("start", _ => OnStartGame());
+        socketIO.OnUnityThread("your-turn", _ => OnYourTurn());
+        socketIO.OnUnityThread("opponent-turn", _ => OnOpponentTurn());
         socketIO.OnUnityThread("update", socketIOResponse =>
         {
             OnUpdate(socketIOResponse.GetValue<Data>());
