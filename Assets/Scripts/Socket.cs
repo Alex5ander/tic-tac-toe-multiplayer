@@ -21,6 +21,7 @@ public class Socket : MonoBehaviour
     [SerializeField] UnityEvent onStartGame;
     [SerializeField] UnityEvent onEndGame;
     [SerializeField] UnityEvent onDisconnected;
+    [SerializeField] UnityEvent onOpponentDisconnected;
     SocketIOUnity socketIO;
     [DllImport("__Internal")]
     static extern void ConnectWebGL();
@@ -130,35 +131,22 @@ public class Socket : MonoBehaviour
 
     void Connect()
     {
-        socketIO = new(uri)
-        {
-            JsonSerializer = new NewtonsoftJsonSerializer()
-        };
-        socketIO.OnConnected += (sender, e) =>
-        {
-            OnConnected();
-        };
-        socketIO.OnUnityThread("simbol", socketIOResponse =>
-        {
-            OnSimbol(socketIOResponse.GetValue<string>());
-        });
+        socketIO = new(uri) { JsonSerializer = new NewtonsoftJsonSerializer() };
+        socketIO.OnConnected += (sender, e) => OnConnected();
+        socketIO.OnUnityThread("simbol", socketIOResponse => OnSimbol(socketIOResponse.GetValue<string>()));
         socketIO.OnUnityThread("start", _ => OnStartGame());
-        socketIO.OnUnityThread("your-turn", _ => OnYourTurn());
-        socketIO.OnUnityThread("opponent-turn", _ => OnOpponentTurn());
-        socketIO.OnUnityThread("update", socketIOResponse =>
-        {
-            OnUpdate(socketIOResponse.GetValue<Data>());
-        });
+
+        socketIO.OnUnityThread("your_turn", _ => OnYourTurn());
+        socketIO.OnUnityThread("opponent_turn", _ => OnOpponentTurn());
+        socketIO.OnUnityThread("opponent_disconnected", _ => OnOpponentDisconnected());
+
+        socketIO.OnUnityThread("update", socketIOResponse => OnUpdate(socketIOResponse.GetValue<Data>()));
+
         socketIO.OnUnityThread("win", socketIOResponse => OnWin());
         socketIO.OnUnityThread("lost", socketIOResponse => OnLost());
         socketIO.OnUnityThread("draw", socketIOResponse => OnDraw());
-        socketIO.OnDisconnected += (sender, e) =>
-        {
-            UnityThread.executeInUpdate(() =>
-            {
-                OnDisconnect();
-            });
-        };
+
+        socketIO.OnDisconnected += (sender, e) => UnityThread.executeInUpdate(() => OnDisconnect());
         socketIO.Connect();
     }
 
@@ -177,6 +165,11 @@ public class Socket : MonoBehaviour
     public void OnDisconnect()
     {
         onDisconnected.Invoke();
+    }
+
+    public void OnOpponentDisconnected()
+    {
+        onOpponentDisconnected.Invoke();
     }
 
     void OnApplicationQuit()

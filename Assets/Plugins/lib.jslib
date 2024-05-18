@@ -17,11 +17,14 @@ mergeInto(LibraryManager.library, {
     this.socket.on("start", _ => {
       gameInstance.SendMessage('Socket', 'OnStartGame');
     });
-    this.socket.on("your-turn", _ => {
+    this.socket.on("your_turn", _ => {
       gameInstance.SendMessage('Socket', 'OnYourTurn');
     });
-    this.socket.on('opponent-turn', _ => {
+    this.socket.on('opponent_turn', _ => {
       gameInstance.SendMessage('Socket', "OnOpponentTurn");
+    })
+    this.socket.on('opponent_disconnected', _ => {
+      gameInstance.SendMessage('Socket', 'OnOpponentDisconnected');
     })
     this.socket.on("update", data => {
       gameInstance.SendMessage('Socket', "OnUpdate", JSON.stringify(data));
