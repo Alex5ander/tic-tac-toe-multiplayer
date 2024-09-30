@@ -1,0 +1,5 @@
+# ninja log v5
+1	128	7493551543273029	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	5240d2ecefc12992
+130	232	7493551544326228	C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/6d13g1r4/obj/armeabi-v7a/libswappywrapper.so	5250b1ca7cf5f9c0
+2	242	7493559843495127	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	5240d2ecefc12992
+243	560	7493559846277553	C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/6d13g1r4/obj/armeabi-v7a/libswappywrapper.so	5250b1ca7cf5f9c0

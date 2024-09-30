@@ -1,0 +1,5 @@
+C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/.utmp/RelWithDebInfo/6d13g1r4/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/.utmp/RelWithDebInfo/6d13g1r4/arm64-v8a/CMakeFiles/rebuild_cache.dir
+C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/.utmp/RelWithDebInfo/6d13g1r4/arm64-v8a/FramePacing/CMakeFiles/swappywrapper.dir
+C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/.utmp/RelWithDebInfo/6d13g1r4/arm64-v8a/FramePacing/CMakeFiles/edit_cache.dir
+C:/Users/Cliente/Desktop/tic-tac-toe-multiplayer/.utmp/RelWithDebInfo/6d13g1r4/arm64-v8a/FramePacing/CMakeFiles/rebuild_cache.dir

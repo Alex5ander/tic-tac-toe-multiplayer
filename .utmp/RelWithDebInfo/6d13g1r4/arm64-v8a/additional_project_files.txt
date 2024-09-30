@@ -1,0 +1,1 @@
+C:\Users\Cliente\Desktop\tic-tac-toe-multiplayer\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\FramePacing\UnitySwappyWrapper.h

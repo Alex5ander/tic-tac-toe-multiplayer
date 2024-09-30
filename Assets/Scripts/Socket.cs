@@ -23,12 +23,14 @@ public class Socket : MonoBehaviour
     [SerializeField] UnityEvent onDisconnected;
     [SerializeField] UnityEvent onOpponentDisconnected;
     SocketIOUnity socketIO;
+#if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     static extern void ConnectWebGL();
     [DllImport("__Internal")]
     static extern void DisconnectWebGL();
     [DllImport("__Internal")]
     static extern void ClickWebGL(int index);
+#endif
     readonly Uri uri = new("https://tic-tac-toe-multiplayer-server.onrender.com/");
     void OnUpdate(string json)
     {
