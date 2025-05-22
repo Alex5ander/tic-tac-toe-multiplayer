@@ -31,7 +31,7 @@ public class Socket : MonoBehaviour
     [DllImport("__Internal")]
     static extern void ClickWebGL(int index);
 #endif
-    readonly Uri uri = new("https://tic-tac-toe-multiplayer-server.glitch.me/");
+    readonly Uri uri = new("https://tic-tac-toe-multiplayer-server.onrender.com");
     void OnUpdate(string json)
     {
         Data data = JsonUtility.FromJson<Data>(json);

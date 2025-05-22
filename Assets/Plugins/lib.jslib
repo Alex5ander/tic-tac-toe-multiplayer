@@ -5,7 +5,7 @@ mergeInto(LibraryManager.library, {
     this.socket.disconnect();
   },
   ConnectWebGL: function () {
-    this.socket = io("https://tic-tac-toe-multiplayer-server.glitch.me/");
+    this.socket = io("https://tic-tac-toe-multiplayer-server.onrender.com");
 
     this.socket.on('connect', () => {
       gameInstance.SendMessage('Socket', 'OnConnected');
